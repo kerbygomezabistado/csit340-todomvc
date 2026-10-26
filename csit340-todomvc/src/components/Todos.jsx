@@ -2,7 +2,6 @@ import { useState } from "react";
 
 function Todos() {
   const [text, setText] = useState("");
-
   const [todos, setTodos] = useState([]);
 
   function handleSubmit(e) {
@@ -33,6 +32,18 @@ function Todos() {
   }
 
   const activeCount = todos.filter((todo) => !todo.completed).length;
+  const completedCount = todos.filter((todo) => todo.completed).length;
+
+  function handleClearCompleted() {
+    setTodos(todos.filter((todo) => !todo.completed));
+  }
+
+  const allCompleted =
+    todos.length > 0 && todos.every((todo) => todo.completed);
+
+  function handleToggleAll() {
+    setTodos(todos.map((todo) => ({ ...todo, completed: !allCompleted })));
+  }
 
   return (
     <section className="mx-auto max-w-[550px]">
@@ -53,7 +64,13 @@ function Todos() {
         {todos.length > 0 && (
           <>
             <main className="relative border-t border-[#e6e6e6]">
-              <input id="toggle-all" type="checkbox" className="peer sr-only" />
+              <input
+                id="toggle-all"
+                type="checkbox"
+                checked={allCompleted}
+                onChange={handleToggleAll}
+                className="peer sr-only"
+              />
               <label
                 htmlFor="toggle-all"
                 className="absolute -top-[66px] left-0 flex h-[65px] w-[60px] cursor-pointer items-center justify-center text-[22px] text-[#949494] peer-checked:text-[#484848]"
@@ -95,17 +112,11 @@ function Todos() {
             </main>
 
             <footer className="grid h-10 grid-cols-3 items-center border-t border-[#e6e6e6] px-[15px] text-[15px]">
-              <span
-                style={{
-                  backgroundColor: "#ffffcc",
-                  padding: "2px",
-                  borderRadius: "3px",
-                  border: "1px dashed #ffcc00",
-                }}
-              >
+              <span>
                 <strong className="font-light">{activeCount}</strong>{" "}
                 {activeCount === 1 ? "item" : "items"} left
               </span>
+
               <ul className="flex justify-center gap-1">
                 <li>
                   <button
@@ -132,12 +143,16 @@ function Todos() {
                   </button>
                 </li>
               </ul>
-              <button
-                type="button"
-                className="cursor-pointer justify-self-end hover:underline"
-              >
-                Clear completed
-              </button>
+
+              {completedCount > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearCompleted}
+                  className="cursor-pointer justify-self-end hover:underline"
+                >
+                  Clear completed
+                </button>
+              )}
             </footer>
           </>
         )}
